@@ -71,13 +71,11 @@ def forward_to_target_url(url_key: str, request: Request, db: Session = Depends(
 
 @app.post("/url", response_model=schemas.URLInfo)
 def create_url(url: schemas.URLBase, db: Session = Depends(get_db)):
-    base_url = URL(get_settings().base_url)
     if not validators.url(url.target_url):
         raise_bad_request(message="Your provided URL is not valid")
 
     db_url = crud.create_db_url(db=db, url=url)
-    # db_url.url = db_url.key
-    db_url.url = str(base_url.replace(path=db_url.key))
+    db_url.url = db_url.key
     return db_url
 
 @app.delete("/url/{url_key}", status_code=204)  
